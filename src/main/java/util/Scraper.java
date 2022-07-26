@@ -4,7 +4,7 @@ import domain.valve.Match;
 import domain.valve.MatchDetailsResult;
 import domain.valve.MatchHistoryResult;
 import domain.valve.PlayerHistory;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import services.Valve;
 
 import java.util.List;

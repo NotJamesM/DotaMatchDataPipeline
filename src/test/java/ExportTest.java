@@ -1,8 +1,8 @@
 import domain.valve.Match;
 import domain.valve.MatchHistoryResult;
 import domain.valve.Player;
-import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 import services.DataRenderer;
 import util.DataRendererFactory;
 import util.HeroFactory;
@@ -20,7 +20,7 @@ public class ExportTest {
     @Test
     void shouldExportCorrectly() throws IOException {
 
-        final DataRenderer dataRenderer = new DataRendererFactory(LogManager.getLogger(), new HeroFactory().initialiseHeroes(Path.of("heroes.json"))).dataRenderer();
+        final DataRenderer dataRenderer = new DataRendererFactory(LoggerFactory.getLogger("TEST_LOGGER"), new HeroFactory().initialiseHeroes(Path.of("heroes.json"))).dataRenderer();
         final Match match = new Match(1, 2, 1, 22, players1);
         final Match match2 = new Match(2, 2, 1, 22, players2);
         match.setRadiantWin(true);

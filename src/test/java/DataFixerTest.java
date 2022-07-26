@@ -1,5 +1,5 @@
-import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 import util.DataFixer;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ public class DataFixerTest {
 
     public static final String DUPLICATE_EXPORT = "example_export_with_duplicates.csv";
     public static final String DUPLICATE_FILE_COPY = "example_export_with_duplicates_copy.csv";
-    private final DataFixer dataFixer = new DataFixer(LogManager.getLogger("TEST_LOGGER"));
+    private final DataFixer dataFixer = new DataFixer(LoggerFactory.getLogger("TEST_LOGGER"));
 
     @Test
     void shouldRemoveDuplicateMatchIds() throws IOException {

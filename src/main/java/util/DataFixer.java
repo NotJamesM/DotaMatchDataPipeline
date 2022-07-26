@@ -1,6 +1,6 @@
 package util;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,5 +32,6 @@ public class DataFixer {
         } else {
             logger.error("Match Id could not be found line:\n{}", line);
         }
+        return null;
     }
 }

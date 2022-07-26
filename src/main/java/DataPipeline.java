@@ -1,5 +1,5 @@
 import domain.valve.MatchHistoryResult;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import services.DataRenderer;
 import util.DataFixer;
 import util.Scraper;

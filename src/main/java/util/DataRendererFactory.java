@@ -1,6 +1,6 @@
 package util;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import services.DataRenderer;
 
 import java.io.IOException;

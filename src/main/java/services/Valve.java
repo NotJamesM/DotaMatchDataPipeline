@@ -4,7 +4,7 @@ import Settings.ValveSettings;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import domain.valve.MatchDetailsResult;
 import domain.valve.MatchHistoryResult;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import util.RateLimitedHttpClient;
 
 import java.io.IOException;

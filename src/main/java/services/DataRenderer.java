@@ -3,7 +3,7 @@ package services;
 import domain.valve.Match;
 import domain.valve.MatchHistoryResult;
 import domain.valve.Player;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import util.HeroFactory;
 
 import java.io.IOException;
