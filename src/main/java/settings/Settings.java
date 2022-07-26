@@ -1,4 +1,4 @@
-package Settings;
+package settings;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -1,7 +1,7 @@
-import Settings.Settings;
 import org.slf4j.Logger;
 import services.DataRenderer;
 import services.Valve;
+import settings.Settings;
 import util.*;
 
 import java.io.IOException;

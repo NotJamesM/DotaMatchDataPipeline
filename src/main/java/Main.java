@@ -1,6 +1,6 @@
-import Settings.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import settings.Settings;
 
 import java.io.IOException;
 

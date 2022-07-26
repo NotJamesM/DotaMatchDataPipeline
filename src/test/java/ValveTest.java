@@ -1,4 +1,3 @@
-import Settings.ValveSettings;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
@@ -8,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import services.Valve;
+import settings.ValveSettings;
 import util.ValveFactory;
 
 import java.io.IOException;

@@ -1,10 +1,10 @@
 package services;
 
-import Settings.ValveSettings;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import domain.valve.MatchDetailsResult;
 import domain.valve.MatchHistoryResult;
 import org.slf4j.Logger;
+import settings.ValveSettings;
 import util.RateLimitedHttpClient;
 
 import java.io.IOException;

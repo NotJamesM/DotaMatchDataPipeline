@@ -1,8 +1,8 @@
 package util;
 
-import Settings.ValveSettings;
 import org.slf4j.Logger;
 import services.Valve;
+import settings.ValveSettings;
 
 import static util.ObjectMapperFactory.createObjectMapper;
 
