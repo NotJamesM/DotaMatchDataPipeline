@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+}
+
+group 'com.github.notjamesm'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    implementation 'org.assertj:assertj-core:3.23.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
+    implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    implementation 'com.google.guava:guava:31.1-jre'
+    testImplementation 'com.github.tomakehurst:wiremock-jre8:2.33.2'
+}
+
+test {
+    useJUnitPlatform()
+}
