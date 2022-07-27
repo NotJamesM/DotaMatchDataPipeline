@@ -2,6 +2,7 @@ package services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import domain.valve.MatchDetailsResult;
+import domain.valve.MatchHistoryBySequenceNumberResult;
 import domain.valve.MatchHistoryResult;
 import org.slf4j.Logger;
 import settings.ValveSettings;
@@ -55,10 +56,28 @@ public class Valve {
         }
     }
 
+    public MatchHistoryBySequenceNumberResult getMatchIdsFromSequenceNumber(long sequenceNumber) {
+        HttpRequest httpRequest = createGetMatchesBySequenceNumberRequest(sequenceNumber);
+        try {
+            HttpResponse<String> response = httpClient.doRequest(httpRequest);
+            return objectMapper.readValue(response.body(), MatchHistoryBySequenceNumberResult.class);
+        } catch (IOException | InterruptedException e) {
+            applicationLogger.error("Match History By Sequence Number request to services.Valve API failed:\n", e);
+            throw new ValveException(e);
+        }
+    }
+
     private HttpRequest createGetMatchesRequest(int matchesToRequest) {
         return HttpRequest.newBuilder().GET()
                 .uri(buildValveApiUrl(valveSettings.getMatchHistoryPath(),
                         format("game_mode=22&min_players=10&skill=3&matches_requested=%d", matchesToRequest)))
+                .build();
+    }
+
+    private HttpRequest createGetMatchesBySequenceNumberRequest(long sequenceNumberToStartFrom) {
+        return HttpRequest.newBuilder().GET()
+                .uri(buildValveApiUrl(valveSettings.getMatchHistoryBySeqNumPath(),
+                        format("matches_requested=%d&start_at_match_seq_num=%d", 100, sequenceNumberToStartFrom)))
                 .build();
     }
 
