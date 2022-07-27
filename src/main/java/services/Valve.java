@@ -3,7 +3,7 @@ package services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import domain.valve.MatchDetailsResult;
 import domain.valve.MatchHistoryBySequenceNumberResult;
-import domain.valve.MatchHistoryResult;
+import domain.valve.MatchRecentHistoryResult;
 import org.slf4j.Logger;
 import settings.ValveSettings;
 import util.RateLimitedHttpClient;
@@ -32,13 +32,13 @@ public class Valve {
         this.applicationLogger = applicationLogger;
     }
 
-    public MatchHistoryResult getMatches(int matchesToRequest) {
+    public MatchRecentHistoryResult getMatches(int matchesToRequest) {
         HttpRequest httpRequest = createGetMatchesRequest(matchesToRequest);
         try {
             HttpResponse<String> response = httpClient.doRequest(httpRequest);
-            final MatchHistoryResult matchHistoryResult = objectMapper.readValue(response.body(), MatchHistoryResult.class);
-            applicationLogger.info("Got match history, number of matches: {}", matchHistoryResult.matches().size());
-            return matchHistoryResult;
+            final MatchRecentHistoryResult matchRecentHistoryResult = objectMapper.readValue(response.body(), MatchRecentHistoryResult.class);
+            applicationLogger.info("Got match history, number of matchIds: {}", matchRecentHistoryResult.matchIds().size());
+            return matchRecentHistoryResult;
         } catch (IOException | InterruptedException e) {
             applicationLogger.error("Match History Request to Valve API failed:\n", e);
             throw new ValveException(e);

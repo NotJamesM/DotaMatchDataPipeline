@@ -1,41 +1,29 @@
-import domain.valve.Match;
-import domain.valve.MatchHistoryResult;
 import domain.valve.Player;
-import org.junit.jupiter.api.Test;
-import org.slf4j.LoggerFactory;
-import services.DataRenderer;
-import util.DataRendererFactory;
-import util.HeroFactory;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExportTest {
 
 
-    @Test
-    void shouldExportCorrectly() throws IOException {
-
-        final DataRenderer dataRenderer = new DataRendererFactory(LoggerFactory.getLogger("TEST_LOGGER"), new HeroFactory().initialiseHeroes(Path.of("heroes.json"))).dataRenderer();
-        final Match match = new Match(1, 2, 1, 22, players1);
-        final Match match2 = new Match(2, 2, 1, 22, players2);
-        match.setRadiantWin(true);
-        match2.setRadiantWin(false);
-        match.setAbandoned(false);
-        match2.setAbandoned(false);
-        match.setGamemode(22);
-        match2.setGamemode(22);
-        final MatchHistoryResult matchHistoryResult = new MatchHistoryResult(0, List.of(match, match2), 2, 1, 2);
-        final String filename = dataRenderer.exportDataToModelFormat(matchHistoryResult);
-
-        final String expected = String.join(System.lineSeparator(), Files.readAllLines(Path.of("example_export.csv")));
-        final String actual = String.join(System.lineSeparator(), Files.readAllLines(Path.of(filename)));
-        assertEquals(expected, actual);
-    }
+//    @Test
+//    void shouldExportCorrectly() throws IOException {
+//
+//        final DataRenderer dataRenderer = new DataRendererFactory(LoggerFactory.getLogger("TEST_LOGGER"), new HeroFactory().initialiseHeroes(Path.of("heroes.json"))).dataRenderer();
+//        final Match match = new Match(1, 2, 1, 22, players1);
+//        final Match match2 = new Match(2, 2, 1, 22, players2);
+//        match.setRadiantWin(true);
+//        match2.setRadiantWin(false);
+//        match.setAbandoned(false);
+//        match2.setAbandoned(false);
+//        match.setGamemode(22);
+//        match2.setGamemode(22);
+//        final MatchHistoryResult matchHistoryResult = new MatchHistoryResult(0, List.of(match, match2), 2, 1, 2);
+//        final String filename = dataRenderer.exportDataToModelFormat(matchHistoryResult);
+//
+//        final String expected = String.join(System.lineSeparator(), Files.readAllLines(Path.of("example_export.csv")));
+//        final String actual = String.join(System.lineSeparator(), Files.readAllLines(Path.of(filename)));
+//        assertEquals(expected, actual);
+//    }
 
     private static final List<Player> players1 = List.of(
             new Player(1, 1, 1, 0, 1),

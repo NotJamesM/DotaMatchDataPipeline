@@ -1,7 +1,7 @@
 package services;
 
 import domain.valve.Match;
-import domain.valve.MatchHistoryResult;
+import domain.valve.MatchRecentHistoryResult;
 import domain.valve.Player;
 import org.slf4j.Logger;
 import util.HeroFactory;
@@ -12,7 +12,6 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.nio.file.StandardOpenOption.APPEND;
@@ -32,11 +31,11 @@ public class DataRenderer {
         this.applicationLogger = applicationLogger;
     }
 
-    public String exportDataToModelFormat(MatchHistoryResult matchHistoryResult) {
-        return exportDataToModelFormat(matchHistoryResult, "");
+    public String exportDataToModelFormat(MatchRecentHistoryResult matchRecentHistoryResult) {
+        return exportDataToModelFormat(matchRecentHistoryResult, "");
     }
 
-    public String exportDataToModelFormat(MatchHistoryResult matchHistoryResult, String filenameToAppendTo) {
+    public String exportDataToModelFormat(MatchRecentHistoryResult matchRecentHistoryResult, String filenameToAppendTo) {
         String filename;
         if (filenameToAppendTo.isBlank()) {
             filename = format("output-%s.csv", getTimeStamp());
@@ -45,14 +44,14 @@ public class DataRenderer {
             filename = filenameToAppendTo;
         }
 
-        matchHistoryResult.matches().stream()
-                .filter(this::filterMatches)
-                .sorted()
-                .map(this::mapToRow)
-                .forEach(row -> writeToFile(row, filename));
+//        matchHistoryResult.matchIds().stream()
+//                .filter(this::filterMatches)
+//                .sorted()
+//                .map(this::mapToRow)
+//                .forEach(row -> writeToFile(row, filename));
 
-        logLatestMatchId(matchHistoryResult);
-        applicationLogger.info("Completed export, ignored {} matches.", ignoreCount);
+//        logLatestMatchId(matchHistoryResult);
+        applicationLogger.info("Completed export, ignored {} matchIds.", ignoreCount);
         return filename;
     }
 
@@ -60,14 +59,14 @@ public class DataRenderer {
         return new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new java.util.Date());
     }
 
-    private void logLatestMatchId(MatchHistoryResult matchHistoryResult) {
-        final List<Match> collect = matchHistoryResult.matches().stream().sorted().collect(Collectors.toList());
-        final String head = Long.toString(collect.get(0).getMatchId());
-        final String tail = Long.toString(collect.get(collect.size() - 1).getMatchId());
-        applicationLogger.info("List head {} | List tail {}", head, tail);
-        final String row = String.format("%s | head: %s - tail: %s", getTimeStamp(), head, tail);
-        writeToFile(row, "MATCH_ID_LOG.txt");
-    }
+//    private void logLatestMatchId(MatchHistoryResult matchHistoryResult) {
+//        final List<Match> collect = matchHistoryResult.matchIds().stream().sorted().collect(Collectors.toList());
+//        final String head = Long.toString(collect.get(0).getMatchId());
+//        final String tail = Long.toString(collect.get(collect.size() - 1).getMatchId());
+//        applicationLogger.info("List head {} | List tail {}", head, tail);
+//        final String row = String.format("%s | head: %s - tail: %s", getTimeStamp(), head, tail);
+//        writeToFile(row, "MATCH_ID_LOG.txt");
+//    }
 
     private boolean filterMatches(Match match) {
         final boolean isValidGamemode = VALID_GAMEMODES.contains(match.getGamemode());

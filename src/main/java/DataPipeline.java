@@ -1,4 +1,4 @@
-import domain.valve.MatchHistoryResult;
+import domain.valve.MatchRecentHistoryResult;
 import org.slf4j.Logger;
 import services.DataRenderer;
 import util.DataFixer;
@@ -20,8 +20,8 @@ public class DataPipeline {
 
     public void getAndExportData() {
         try {
-            final MatchHistoryResult matchHistoryResult = scraper.scrapeRecentMatches(100);
-            dataRenderer.exportDataToModelFormat(matchHistoryResult);
+            final MatchRecentHistoryResult matchRecentHistoryResult = scraper.scrapeRecentMatches(100);
+            dataRenderer.exportDataToModelFormat(matchRecentHistoryResult);
             dataFixer.removeDuplicates("");
         } catch (Exception e) {
             logger.error("Uncaught Exception: \n", e);

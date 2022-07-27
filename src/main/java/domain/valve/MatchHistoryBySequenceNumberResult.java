@@ -10,7 +10,7 @@ import java.util.List;
 public record MatchHistoryBySequenceNumberResult(List<MatchId> matchIds) {
 
     @JsonCreator
-    public MatchHistoryBySequenceNumberResult(@JsonProperty("matches") List<MatchId> matchIds) {
+    public MatchHistoryBySequenceNumberResult(@JsonProperty("matchIds") List<MatchId> matchIds) {
         this.matchIds = matchIds;
     }
 }

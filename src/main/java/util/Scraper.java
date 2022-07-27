@@ -1,8 +1,7 @@
 package util;
 
-import domain.valve.Match;
 import domain.valve.MatchDetailsResult;
-import domain.valve.MatchHistoryResult;
+import domain.valve.MatchRecentHistoryResult;
 import domain.valve.PlayerHistory;
 import org.slf4j.Logger;
 import services.Valve;
@@ -21,23 +20,24 @@ public class Scraper {
         this.applicationLogger = applicationLogger;
     }
 
-    public MatchHistoryResult scrapeRecentMatches(int matchesToRequest) {
-        final MatchHistoryResult matches = valve.getMatches(matchesToRequest);
+    public MatchRecentHistoryResult scrapeRecentMatches(int matchesToRequest) {
+        final MatchRecentHistoryResult matches = valve.getMatches(matchesToRequest);
         return enrichMatches(matches);
     }
 
-    private MatchHistoryResult enrichMatches(MatchHistoryResult matches) {
-        final int size = matches.matches().size();
-        int count = 0;
-        for (Match match : matches.matches()) {
-            applicationLogger.info(" [{}/{}] Getting match details for match id: {}", count++, size, match.getMatchId());
-            final MatchDetailsResult matchDetails = valve.getMatchDetails(match.getMatchId());
-            match.setRadiantWin(matchDetails.radiantWin());
-            match.setAbandoned(getAbandonedStatus(matchDetails));
-            match.setGamemode(matchDetails.gameMode());
-            match.setDuration(matchDetails.duration());
-        }
-        return matches;
+    private MatchRecentHistoryResult enrichMatches(MatchRecentHistoryResult matches) {
+//        final int size = matches.matchIds().size();
+//        int count = 0;
+//        for (Match match : matches.matchIds()) {
+//            applicationLogger.info(" [{}/{}] Getting match details for match id: {}", count++, size, match.getMatchId());
+//            final MatchDetailsResult matchDetails = valve.getMatchDetails(match.getMatchId());
+//            match.setRadiantWin(matchDetails.radiantWin());
+//            match.setAbandoned(getAbandonedStatus(matchDetails));
+//            match.setGamemode(matchDetails.gameMode());
+//            match.setDuration(matchDetails.duration());
+//        }
+//        return matches;
+        return null;
     }
 
     private boolean getAbandonedStatus(MatchDetailsResult matchDetailsResult) {

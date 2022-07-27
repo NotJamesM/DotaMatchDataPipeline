@@ -1,7 +1,10 @@
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
-import domain.valve.*;
+import domain.valve.MatchDetailsResult;
+import domain.valve.MatchId;
+import domain.valve.MatchRecentHistoryResult;
+import domain.valve.PlayerHistory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -47,7 +50,7 @@ public class ValveTest {
     }
 
     @Test
-    void shouldGetMatchHistory() throws IOException {
+    void getRecentMatchHistoryShouldReturnListOfMatchIds() throws IOException {
         stubFor(get(urlPathEqualTo("/IDOTA2Match_570/GetMatchHistory/V001/"))
                 .withQueryParam("key", new EqualToPattern("APIKEY"))
                 .withQueryParam("skill", new EqualToPattern("3"))
@@ -55,15 +58,10 @@ public class ValveTest {
                 .withQueryParam("game_mode", new EqualToPattern("22"))
                 .willReturn(okJson(getApiExampleJson("matches_response_1_match.json"))));
 
-        final MatchHistoryResult matchHistoryResult = valve.getMatches(1);
-        final Match match = matchHistoryResult.matches().get(0);
-        final List<Player> players = match.getPlayers();
-
-        assertThat(matchHistoryResult.numberOfResults()).isEqualTo(1);
-        assertThat(matchHistoryResult.matches().size()).isEqualTo(1);
-        assertThat(match.getMatchId()).isEqualTo(6675671621L);
-        assertThat(players.size()).isEqualTo(10);
-        assertThat(players.get(0).accountId()).isEqualTo(4294967295L);
+        final List<MatchId> expectedMatchIds = Stream.of(6675671621L, 6675671635L, 1358461484L, 6675671563L).map(MatchId::new).collect(toList());
+        final MatchRecentHistoryResult matchRecentHistoryResult = valve.getMatches(1);
+        assertThat(matchRecentHistoryResult.matchIds()).isEqualTo(expectedMatchIds);
+        assertThat(matchRecentHistoryResult.numberOfResults()).isEqualTo(1L);
     }
 
     @Test
