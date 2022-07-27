@@ -1,3 +1,5 @@
+package services;
+
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
@@ -5,11 +7,11 @@ import domain.valve.MatchDetailsResult;
 import domain.valve.MatchId;
 import domain.valve.MatchRecentHistoryResult;
 import domain.valve.PlayerHistory;
+import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import services.Valve;
 import settings.ValveSettings;
 import util.ValveFactory;
 
@@ -22,12 +24,11 @@ import java.util.stream.Stream;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static java.lang.System.lineSeparator;
 import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @WireMockTest
-public class ValveTest {
+public class ValveTest implements WithAssertions {
 
     private final Logger testLogger = LoggerFactory.getLogger("TEST_LOGGER");
     private final ValveSettings settings = mock(ValveSettings.class);
@@ -72,7 +73,7 @@ public class ValveTest {
                 .willReturn(okJson(getApiExampleJson("matchDetails.json"))));
 
         final MatchDetailsResult matchDetails = valve.getMatchDetails(6676198789L);
-        final List<PlayerHistory> playerHistories = matchDetails.playerHistory();
+        final List<PlayerHistory> playerHistories = matchDetails.players();
 
         assertThat(matchDetails.matchId()).isEqualTo(6676198789L);
         assertThat(matchDetails.radiantWin()).isFalse();

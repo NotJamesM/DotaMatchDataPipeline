@@ -9,25 +9,25 @@ import java.util.List;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT, property = "result", defaultImpl = MatchDetailsResult.class)
 public record MatchDetailsResult(
         long matchId,
-        long lobbyType,
-        long gameMode,
+        int lobbyType,
+        int gameMode,
         boolean radiantWin,
         long duration,
-        List<PlayerHistory> playerHistory
+        List<PlayerHistory> players
 ) {
 
     @JsonCreator
     public MatchDetailsResult(@JsonProperty("match_id") long matchId,
-                              @JsonProperty("lobby_type") long lobbyType,
-                              @JsonProperty("game_mode") long gameMode,
+                              @JsonProperty("lobby_type") int lobbyType,
+                              @JsonProperty("game_mode") int gameMode,
                               @JsonProperty("radiant_win") boolean radiantWin,
                               @JsonProperty("duration") long duration,
-                              @JsonProperty("players") List<PlayerHistory> playerHistory) {
+                              @JsonProperty("players") List<PlayerHistory> players) {
         this.matchId = matchId;
         this.lobbyType = lobbyType;
         this.gameMode = gameMode;
         this.radiantWin = radiantWin;
         this.duration = duration;
-        this.playerHistory = playerHistory;
+        this.players = players;
     }
 }
