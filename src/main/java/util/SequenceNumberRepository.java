@@ -21,7 +21,9 @@ public class SequenceNumberRepository {
 
     public long getCurrentSequenceNumber() {
         try {
-            return parseLong(readString(sequenceNumberRepositorySettings.getSequenceNumberFilePath()));
+            final long sequenceNumber = parseLong(readString(sequenceNumberRepositorySettings.getSequenceNumberFilePath()));
+            applicationLogger.info("Getting current sequence number of: {}", sequenceNumber);
+            return sequenceNumber;
         } catch (IOException e) {
             applicationLogger.error("Failed to get sequence number due to:\n", e);
             throw new RuntimeException(e);
@@ -30,6 +32,7 @@ public class SequenceNumberRepository {
 
     public void updateSequenceNumber(long newSequenceNumber) {
         try {
+            applicationLogger.info("Updating sequence number to: {}", newSequenceNumber);
             writeString(sequenceNumberRepositorySettings.getSequenceNumberFilePath(), Long.toString(newSequenceNumber));
         } catch (IOException e) {
             applicationLogger.error("Failed to update sequence number {} due to:\n{}", e, newSequenceNumber);
