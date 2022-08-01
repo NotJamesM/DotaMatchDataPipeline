@@ -2,7 +2,10 @@ package util;
 
 import domain.model.HeroModel;
 import domain.model.MatchModel;
-import domain.valve.*;
+import domain.valve.MatchDetailsResult;
+import domain.valve.MatchId;
+import domain.valve.MatchRecentHistoryResult;
+import domain.valve.PlayerHistory;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +18,9 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
+import static testbuilders.MatchDetailsResultBuilder.matchDetailsResult;
+import static testbuilders.MatchHistoryBySequenceNumberResultBuilder.matchHistoryBySequenceNumberResult;
+import static testbuilders.PlayerBuilder.player;
 
 class ScraperTest implements WithAssertions {
 
@@ -32,14 +38,36 @@ class ScraperTest implements WithAssertions {
     @Test
     void scraperSequenceNumberTest() {
         when(sequenceNumberRepository.getCurrentSequenceNumber()).thenReturn(4500000000L);
-        when(valve.getMatchIdsFromSequenceNumber(eq(4500000000L), anyInt())).thenReturn(new MatchHistoryBySequenceNumberResult(List.of(new MatchId(123456L))));
-        when(valve.getMatchDetails(123456L)).thenReturn(new MatchDetailsResult(123456L, 5584240762L, 22, 3, true, 5000L, players));
+        when(valve.getMatchIdsFromSequenceNumber(eq(4500000000L), anyInt()))
+                .thenReturn(matchHistoryBySequenceNumberResult()
+                        .addMatchId(123456L)
+                        .addMatchId(123457L)
+                        .addMatchId(123458L)
+                        .build());
+        primeMatchDetails();
 
-        final List<MatchModel> matchModels = scraper.scrapeMatchesBySequenceNumber(1);
-        final MatchModel model = matchModels.get(0);
+        final List<MatchModel> matchModels = scraper.scrapeMatchesBySequenceNumber(3);
+        assertThat(matchModels).hasSize(3);
+        assertThat(matchModels).extracting("matchId").containsExactlyInAnyOrder(123456L, 123457L, 123458L);
+        verify(sequenceNumberRepository).updateSequenceNumber(5500000000L);
+    }
 
-        assertThat(model.matchId()).isEqualTo(123456L);
-        verify(sequenceNumberRepository).updateSequenceNumber(5584240762L);
+    private void primeMatchDetails() {
+        when(valve.getMatchDetails(123456L))
+                .thenReturn(matchDetailsResult()
+                        .withMatchId(123456L)
+                        .withSequenceNumber(4500000001L)
+                        .withPlayers(List.of(player().withHeroId(1).withLeaverStatus(0).withTeamNumber(1).build())).build());
+        when(valve.getMatchDetails(123457L))
+                .thenReturn(matchDetailsResult()
+                        .withMatchId(123457L)
+                        .withSequenceNumber(4500000002L)
+                        .withPlayers(List.of(player().withHeroId(1).withLeaverStatus(0).withTeamNumber(1).build())).build());
+        when(valve.getMatchDetails(123458L))
+                .thenReturn(matchDetailsResult()
+                        .withMatchId(123458L)
+                        .withSequenceNumber(5500000000L)
+                        .withPlayers(List.of(player().withHeroId(1).withLeaverStatus(0).withTeamNumber(1).build())).build());
     }
 
     @BeforeEach

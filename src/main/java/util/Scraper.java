@@ -47,7 +47,7 @@ public class Scraper {
         final List<MatchDetailsResult> matchDetailsResults = new ArrayList<>();
         for (int i = 0, matchIdsSize = matchIds.size(); i < matchIdsSize; i++) {
             MatchId matchId = matchIds.get(i);
-            applicationLogger.info(" [{}/{}] Getting match details for match id: {}", i++, matchIds.size(), matchId.matchId());
+            applicationLogger.info(" [{}/{}] Getting match details for match id: {}", i + 1, matchIds.size(), matchId.matchId());
             matchDetailsResults.add(valve.getMatchDetails(matchId.matchId()));
         }
         return matchDetailsResults;
