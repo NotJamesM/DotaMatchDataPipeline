@@ -16,6 +16,7 @@ import settings.ValveSettings;
 import util.ValveFactory;
 
 import java.io.IOException;
+import java.net.http.HttpClient;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -44,7 +45,7 @@ public class ValveTest implements WithAssertions {
 
         final List<MatchId> expectedMatchIds = Stream.of(6677243344L, 6677196925L, 6677232182L, 6677197160L, 6677185464L, 6677228827L, 6677214592L, 6677211996L, 6677230785L, 6677212191L, 6677207199L, 6677228671L, 6677203659L, 6677209645L, 6677194983L, 6677252037L, 6677225086L, 6677226516L, 6677214261L, 6677201349L).map(MatchId::new)
                 .collect(toList());
-        final List<MatchId> actualMatchIds = valve.getMatchIdsFromSequenceNumber(5584240754L).matchIds();
+        final List<MatchId> actualMatchIds = valve.getMatchIdsFromSequenceNumber(5584240754L, 100).matchIds();
 
         assertThat(actualMatchIds).hasSize(20);
         assertThat(actualMatchIds).isEqualTo(expectedMatchIds);
@@ -89,7 +90,7 @@ public class ValveTest implements WithAssertions {
         when(settings.getMatchHistoryPath()).thenReturn("IDOTA2Match_570/GetMatchHistory/V001/");
         when(settings.getMatchDetailsPath()).thenReturn("IDOTA2Match_570/GetMatchDetails/V001/");
         when(settings.getMatchHistoryBySeqNumPath()).thenReturn("IDOTA2Match_570/GetMatchHistoryBySequenceNum/V001/");
-        valve = new ValveFactory(settings, testLogger).valve();
+        valve = new ValveFactory(HttpClient.newBuilder().build(), settings, testLogger).valve();
     }
 
     private String getApiExampleJson(String apiExampleFileName) throws IOException {

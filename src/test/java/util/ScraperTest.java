@@ -2,10 +2,7 @@ package util;
 
 import domain.model.HeroModel;
 import domain.model.MatchModel;
-import domain.valve.MatchDetailsResult;
-import domain.valve.MatchId;
-import domain.valve.MatchRecentHistoryResult;
-import domain.valve.PlayerHistory;
+import domain.valve.*;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,15 +13,15 @@ import services.Valve;
 import java.time.Duration;
 import java.util.List;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.*;
 
 class ScraperTest implements WithAssertions {
 
     @Test
     void scraperShouldReturnListOfDetailedMatches() {
         when(valve.getMatches(1)).thenReturn(new MatchRecentHistoryResult(0, List.of(new MatchId(MATCH_ID)), 1, 1, 1));
-        when(valve.getMatchDetails(MATCH_ID)).thenReturn(new MatchDetailsResult(MATCH_ID, 22, 12, true, _32_MINUTES, players));
+        when(valve.getMatchDetails(MATCH_ID)).thenReturn(new MatchDetailsResult(MATCH_ID, 3333444L, 22, 12, true, _32_MINUTES, players));
         final List<MatchModel> matchModels = scraper.scrapeRecentMatches(1);
         final MatchModel model = matchModels.get(0);
         assertThat(matchModels).hasSize(1);
@@ -32,9 +29,22 @@ class ScraperTest implements WithAssertions {
         assertThatHeroesAreCorrect(model);
     }
 
+    @Test
+    void scraperSequenceNumberTest() {
+        when(sequenceNumberRepository.getCurrentSequenceNumber()).thenReturn(4500000000L);
+        when(valve.getMatchIdsFromSequenceNumber(eq(4500000000L), anyInt())).thenReturn(new MatchHistoryBySequenceNumberResult(List.of(new MatchId(123456L))));
+        when(valve.getMatchDetails(123456L)).thenReturn(new MatchDetailsResult(123456L, 5584240762L, 22, 3, true, 5000L, players));
+
+        final List<MatchModel> matchModels = scraper.scrapeMatchesBySequenceNumber(1);
+        final MatchModel model = matchModels.get(0);
+
+        assertThat(model.matchId()).isEqualTo(123456L);
+        verify(sequenceNumberRepository).updateSequenceNumber(5584240762L);
+    }
+
     @BeforeEach
     void setUp() {
-        scraper = new ScraperFactory(valve, logger).scraper();
+        scraper = new ScraperFactory(valve, sequenceNumberRepository, logger).scraper();
     }
 
     private void assertThatMatchDetailsAreCorrect(MatchModel model) {
@@ -54,6 +64,7 @@ class ScraperTest implements WithAssertions {
     public static final long _32_MINUTES = Duration.ofMinutes(32L).toSeconds();
     private final Logger logger = LoggerFactory.getLogger("TEST_LOGGER");
     private final Valve valve = mock(Valve.class);
+    private final SequenceNumberRepository sequenceNumberRepository = mock(SequenceNumberRepository.class);
     private Scraper scraper;
 
     private final List<PlayerHistory> players = List.of(

@@ -23,11 +23,19 @@ public class DataPipeline {
         this.logger = logger;
     }
 
-    public void getAndExportData() {
+    public void getAndExportRecentData() {
         try {
-            final List<MatchModel> matchRecentHistoryResult = scraper.scrapeRecentMatches(100);
-            dataRenderer.exportDataToModelFormat(null);
-            dataFixer.removeDuplicates("");
+            final List<MatchModel> matchModels = scraper.scrapeRecentMatches(100);
+            dataRenderer.exportDataToModelFormat(matchModels);
+        } catch (Exception e) {
+            logger.error("Uncaught Exception: \n", e);
+        }
+    }
+
+    public void getAndExportDataBySequenceNumber() {
+        try {
+            final List<MatchModel> matchModels = scraper.scrapeMatchesBySequenceNumber(10);
+            dataRenderer.exportDataToModelFormat(matchModels);
         } catch (Exception e) {
             logger.error("Uncaught Exception: \n", e);
         }

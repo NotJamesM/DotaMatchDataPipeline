@@ -2,10 +2,7 @@ package util;
 
 import domain.model.HeroModel;
 import domain.model.MatchModel;
-import domain.valve.MatchDetailsResult;
-import domain.valve.MatchId;
-import domain.valve.MatchRecentHistoryResult;
-import domain.valve.PlayerHistory;
+import domain.valve.*;
 import org.slf4j.Logger;
 import services.Valve;
 
@@ -18,23 +15,35 @@ import static java.util.stream.Collectors.toList;
 public class Scraper {
 
     private final Valve valve;
+    private final SequenceNumberRepository sequenceNumberRepository;
     private final Logger applicationLogger;
 
     private static final List<Integer> VALID_LEAVER_STATUES = List.of(0, 1);
 
-    public Scraper(Valve valve, Logger applicationLogger) {
+    public Scraper(Valve valve, SequenceNumberRepository sequenceNumberRepository, Logger applicationLogger) {
         this.valve = valve;
+        this.sequenceNumberRepository = sequenceNumberRepository;
         this.applicationLogger = applicationLogger;
     }
 
     public List<MatchModel> scrapeRecentMatches(int matchesToRequest) {
         final MatchRecentHistoryResult matches = valve.getMatches(matchesToRequest);
-        final List<MatchDetailsResult> matchDetails = getMatchDetails(matches);
+        final List<MatchDetailsResult> matchDetails = getMatchDetails(matches.matchIds());
         return matchDetailsToMatchModel(matchDetails);
     }
 
-    private List<MatchDetailsResult> getMatchDetails(MatchRecentHistoryResult matches) {
-        final List<MatchId> matchIds = matches.matchIds();
+    public List<MatchModel> scrapeMatchesBySequenceNumber(int matchesToRequest) {
+        return scrapeMatchesBySequenceNumber(matchesToRequest, sequenceNumberRepository.getCurrentSequenceNumber());
+    }
+
+    public List<MatchModel> scrapeMatchesBySequenceNumber(int matchesToRequest, long sequenceNumber) {
+        final MatchHistoryBySequenceNumberResult matches = valve.getMatchIdsFromSequenceNumber(sequenceNumber, matchesToRequest);
+        final List<MatchDetailsResult> matchDetailList = getMatchDetails(matches.matchIds());
+        sequenceNumberRepository.updateSequenceNumber(getLatestSequenceNumber(matchDetailList));
+        return matchDetailsToMatchModel(matchDetailList);
+    }
+
+    private List<MatchDetailsResult> getMatchDetails(List<MatchId> matchIds) {
         final List<MatchDetailsResult> matchDetailsResults = new ArrayList<>();
         for (int i = 0, matchIdsSize = matchIds.size(); i < matchIdsSize; i++) {
             MatchId matchId = matchIds.get(i);
@@ -42,6 +51,10 @@ public class Scraper {
             matchDetailsResults.add(valve.getMatchDetails(matchId.matchId()));
         }
         return matchDetailsResults;
+    }
+
+    private long getLatestSequenceNumber(List<MatchDetailsResult> matchDetailList) {
+        return matchDetailList.get(matchDetailList.size() - 1).sequenceNumber();
     }
 
     private List<MatchModel> matchDetailsToMatchModel(List<MatchDetailsResult> matchDetails) {

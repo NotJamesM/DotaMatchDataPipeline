@@ -1,8 +1,7 @@
 package services;
 
-import domain.valve.Match;
-import domain.valve.MatchRecentHistoryResult;
-import domain.valve.Player;
+import domain.model.HeroModel;
+import domain.model.MatchModel;
 import org.slf4j.Logger;
 import util.HeroFactory;
 
@@ -16,12 +15,11 @@ import java.util.Map;
 import static java.lang.String.format;
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.CREATE;
-import static java.time.Duration.ofSeconds;
 import static org.apache.commons.lang3.time.DurationFormatUtils.formatDuration;
 
 public class DataRenderer {
 
-    private static final List<Long> VALID_GAMEMODES = List.of(22L);
+    private static final List<Integer> VALID_GAMEMODES = List.of(22);
     private final Map<Integer, HeroFactory.HeroNameColumnIndex> heroIdMap;
     private final Logger applicationLogger;
     private static long ignoreCount = 0;
@@ -31,11 +29,11 @@ public class DataRenderer {
         this.applicationLogger = applicationLogger;
     }
 
-    public String exportDataToModelFormat(MatchRecentHistoryResult matchRecentHistoryResult) {
-        return exportDataToModelFormat(matchRecentHistoryResult, "");
+    public String exportDataToModelFormat(List<MatchModel> matchModels) {
+        return exportDataToModelFormat(matchModels, "");
     }
 
-    public String exportDataToModelFormat(MatchRecentHistoryResult matchRecentHistoryResult, String filenameToAppendTo) {
+    public String exportDataToModelFormat(List<MatchModel> matchModels, String filenameToAppendTo) {
         String filename;
         if (filenameToAppendTo.isBlank()) {
             filename = format("output-%s.csv", getTimeStamp());
@@ -44,13 +42,13 @@ public class DataRenderer {
             filename = filenameToAppendTo;
         }
 
-//        matchHistoryResult.matchIds().stream()
-//                .filter(this::filterMatches)
-//                .sorted()
-//                .map(this::mapToRow)
-//                .forEach(row -> writeToFile(row, filename));
+        matchModels.stream()
+                .filter(this::filterMatches)
+                .sorted()
+                .map(this::mapToRow)
+                .forEach(row -> writeToFile(row, filename));
 
-//        logLatestMatchId(matchHistoryResult);
+        logLatestMatchId(matchModels);
         applicationLogger.info("Completed export, ignored {} matchIds.", ignoreCount);
         return filename;
     }
@@ -59,21 +57,21 @@ public class DataRenderer {
         return new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new java.util.Date());
     }
 
-//    private void logLatestMatchId(MatchHistoryResult matchHistoryResult) {
-//        final List<Match> collect = matchHistoryResult.matchIds().stream().sorted().collect(Collectors.toList());
-//        final String head = Long.toString(collect.get(0).getMatchId());
-//        final String tail = Long.toString(collect.get(collect.size() - 1).getMatchId());
-//        applicationLogger.info("List head {} | List tail {}", head, tail);
-//        final String row = String.format("%s | head: %s - tail: %s", getTimeStamp(), head, tail);
-//        writeToFile(row, "MATCH_ID_LOG.txt");
-//    }
+    private void logLatestMatchId(List<MatchModel> matchModels) {
+        final List<Long> collect = matchModels.stream().map(MatchModel::matchId).sorted().toList();
+        final String head = Long.toString(collect.get(0));
+        final String tail = Long.toString(collect.get(collect.size() - 1));
+        applicationLogger.info("List head {} | List tail {}", head, tail);
+        final String row = String.format("%s | head: %s - tail: %s", getTimeStamp(), head, tail);
+        writeToFile(row, "MATCH_ID_LOG.txt");
+    }
 
-    private boolean filterMatches(Match match) {
-        final boolean isValidGamemode = VALID_GAMEMODES.contains(match.getGamemode());
+    private boolean filterMatches(MatchModel match) {
+        final boolean isValidGamemode = VALID_GAMEMODES.contains(match.gameMode());
         final boolean isValidGame = isValidGamemode && !match.isAbandoned();
         if (!isValidGame) {
-            applicationLogger.info("Ignoring match id {}: isValidGameMode: {} - gamemode(details) {} lobby type - {} | isAbandoned: {} | gameLength: {}", match.getMatchId(), isValidGamemode, match.getGamemode(), match.getLobbyType(), match.isAbandoned(),
-                    formatDuration(ofSeconds(match.getDuration()).toMillis(), "HH:mm:ss"));
+            applicationLogger.info("Ignoring match id {}: isValidGameMode: {} - gamemode(details) {} lobby type - {} | isAbandoned: {} | gameLength: {}",
+                    match.matchId(), isValidGamemode, match.gameMode(), match.lobbyType(), match.isAbandoned(), formatDuration(match.duration().toMillis(), "HH:mm:ss"));
             ignoreCount++;
         }
         return isValidGame;
@@ -88,34 +86,34 @@ public class DataRenderer {
         }
     }
 
-    private String mapToRow(Match match) {
-        applicationLogger.info("Exporting data for match id: {}", match.getMatchId());
+    private String mapToRow(MatchModel match) {
+        applicationLogger.info("Exporting data for match id: {}", match.matchId());
         StringBuilder sb = new StringBuilder();
-        sb.append(format("%s,%s,%s", 1, match.getMatchId(), isRadiantWin(match)));
+        sb.append(format("%s,%s,%s", 1, match.matchId(), match.radiantWin()));
         for (Map.Entry<Integer, HeroFactory.HeroNameColumnIndex> heroIndexEntry : heroIdMap.entrySet()) {
-            List<Player> players = match.getPlayers();
-            for (int i = 0; i < players.size(); i++) {
-                Player player = players.get(i);
-                if (player.heroId() == heroIndexEntry.getKey()) {
-                    if (player.teamNumber() == 0) {
-                        sb.append(",1,0");
-                    } else {
-                        sb.append(",0,1");
-                    }
-                    break;
-                }
-                if (i == players.size() - 1) {
-                    sb.append(",0,0");
-                }
+            List<HeroModel> heroes = match.heroes();
+            for (int i = 0; i < heroes.size(); i++) {
+                if (appendHeroEntry(sb, heroIndexEntry, heroes, i)) break;
             }
         }
 
         return sb.toString();
     }
 
-
-    private String isRadiantWin(Match match) {
-        return match.isRadiantWin() ? "1" : "0";
+    private boolean appendHeroEntry(StringBuilder sb, Map.Entry<Integer, HeroFactory.HeroNameColumnIndex> heroIndexEntry, List<HeroModel> heroes, int i) {
+        HeroModel hero = heroes.get(i);
+        if (hero.heroId() == heroIndexEntry.getKey()) {
+            if (hero.isRadiant()) {
+                sb.append(",1,0");
+            } else {
+                sb.append(",0,1");
+            }
+            return true;
+        }
+        if (i == heroes.size() - 1) {
+            sb.append(",0,0");
+        }
+        return false;
     }
 
     private String generateHeader() {

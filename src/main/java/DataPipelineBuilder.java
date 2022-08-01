@@ -5,6 +5,7 @@ import settings.Settings;
 import util.*;
 
 import java.io.IOException;
+import java.net.http.HttpClient;
 import java.nio.file.Path;
 import java.util.Map;
 
@@ -19,11 +20,13 @@ public class DataPipelineBuilder {
     }
 
     public DataPipeline build() throws IOException {
-        final Valve valve = new ValveFactory(settings, applicationLogger).valve();
-        final Scraper scraper = new ScraperFactory(valve, applicationLogger).scraper();
+        final HttpClient httpClient = HttpClient.newBuilder().build();
+
+        final Valve valve = new ValveFactory(httpClient, settings, applicationLogger).valve();
+        final Scraper scraper = new ScraperFactory(valve, new SequenceNumberRepository(), applicationLogger).scraper();
 
         final DataFixer dataFixer = new DataFixer(applicationLogger);
-        Map<Integer, HeroFactory.HeroNameColumnIndex> heroIdMap = new HeroFactory().initialiseHeroes(Path.of("heroes.json")); //TODO: make a property
+        Map<Integer, HeroFactory.HeroNameColumnIndex> heroIdMap = new HeroFactory().initialiseHeroes(Path.of("src/main/resources/heroes.json")); //TODO: make a property
         final DataRenderer dataRenderer = new DataRendererFactory(applicationLogger, heroIdMap).dataRenderer();
         return new DataPipeline(scraper, dataFixer, dataRenderer, applicationLogger);
     }

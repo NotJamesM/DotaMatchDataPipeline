@@ -56,8 +56,8 @@ public class Valve {
         }
     }
 
-    public MatchHistoryBySequenceNumberResult getMatchIdsFromSequenceNumber(long sequenceNumber) {
-        HttpRequest httpRequest = createGetMatchesBySequenceNumberRequest(sequenceNumber);
+    public MatchHistoryBySequenceNumberResult getMatchIdsFromSequenceNumber(long sequenceNumber, int matchesToRequest) {
+        HttpRequest httpRequest = createGetMatchesBySequenceNumberRequest(sequenceNumber, matchesToRequest);
         try {
             HttpResponse<String> response = httpClient.doRequest(httpRequest);
             return objectMapper.readValue(response.body(), MatchHistoryBySequenceNumberResult.class);
@@ -74,10 +74,10 @@ public class Valve {
                 .build();
     }
 
-    private HttpRequest createGetMatchesBySequenceNumberRequest(long sequenceNumberToStartFrom) {
+    private HttpRequest createGetMatchesBySequenceNumberRequest(long sequenceNumberToStartFrom, int matchesToRequest) {
         return HttpRequest.newBuilder().GET()
                 .uri(buildValveApiUrl(valveSettings.getMatchHistoryBySeqNumPath(),
-                        format("matches_requested=%d&start_at_match_seq_num=%d", 100, sequenceNumberToStartFrom)))
+                        format("matches_requested=%d&start_at_match_seq_num=%d", matchesToRequest, sequenceNumberToStartFrom)))
                 .build();
     }
 
