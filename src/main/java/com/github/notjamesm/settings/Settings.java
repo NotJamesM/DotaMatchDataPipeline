@@ -1,5 +1,6 @@
 package com.github.notjamesm.settings;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -7,7 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
-public class Settings implements ValveSettings, SequenceNumberRepositorySettings, HeroFactorySettings, DataRenderSettings {
+public class Settings implements ValveSettings, SequenceNumberRepositorySettings, HeroFactorySettings, DataRenderSettings, DataPipelineSettings {
 
     private final Properties properties;
     private final Logger applicationLogger;
@@ -26,46 +27,60 @@ public class Settings implements ValveSettings, SequenceNumberRepositorySettings
 
     @Override
     public String valveApiKey() {
-        return properties.getProperty("valve.api.key");
+        return getOrThrowRuntimeException("valve.api.key");
     }
 
     @Override
     public double rateLimit() {
-        return Double.parseDouble(properties.getProperty("rate.limit"));
+        return Double.parseDouble(getOrThrowRuntimeException("requests.to.valve.per.second"));
     }
 
     @Override
     public String baseValveApiUrl() {
-        return properties.getProperty("base.valve.api.url");
+        return getOrThrowRuntimeException("base.valve.api.url");
     }
 
     @Override
     public String getMatchHistoryPath() {
-        return properties.getProperty("get.match.history.path");
+        return getOrThrowRuntimeException("get.match.history.path");
     }
 
     @Override
     public String getMatchHistoryBySeqNumPath() {
-        return properties.getProperty("get.match.history.by.seq.num.path");
+        return getOrThrowRuntimeException("get.match.history.by.seq.num.path");
     }
 
     @Override
     public String getMatchDetailsPath() {
-        return properties.getProperty("get.match.details.path");
+        return getOrThrowRuntimeException("get.match.details.path");
     }
 
     @Override
     public Path getSequenceNumberFilePath() {
-        return Path.of(properties.getProperty("sequence.number.file.path"));
+        return Path.of(getOrThrowRuntimeException("sequence.number.file.path"));
     }
 
     @Override
     public Path getHeroesJsonFilePath() {
-        return Path.of(properties.getProperty("heroes.json.file.path"));
+        return Path.of(getOrThrowRuntimeException("heroes.json.file.path"));
     }
 
     @Override
     public Path getExportDirectoryPath() {
-        return Path.of(properties.getProperty("export.directory.path"));
+        return Path.of(getOrThrowRuntimeException("export.directory.path"));
+    }
+
+    @Override
+    public int numberOfMatchesToScrapeFor() {
+        return Integer.parseInt(getOrThrowRuntimeException("number.of.matches.to.scrape.for"));
+    }
+
+    private String getOrThrowRuntimeException(String key) {
+        final String propertyValue = properties.getProperty(key);
+        if (propertyValue == null || StringUtils.isBlank(propertyValue)) {
+            applicationLogger.error("Property '{}' is missing or not set correctly.", key);
+            throw new RuntimeException("Property '%s' is missing or not set correctly.".formatted(key));
+        }
+        return propertyValue;
     }
 }
