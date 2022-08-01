@@ -23,7 +23,7 @@ public class DataPipelineBuilder {
         final HttpClient httpClient = HttpClient.newBuilder().build();
 
         final Valve valve = new ValveFactory(httpClient, settings, applicationLogger).valve();
-        final Scraper scraper = new ScraperFactory(valve, new SequenceNumberRepository(), applicationLogger).scraper();
+        final Scraper scraper = new ScraperFactory(valve, new SequenceNumberRepository(settings, applicationLogger), applicationLogger).scraper();
 
         final DataFixer dataFixer = new DataFixer(applicationLogger);
         Map<Integer, HeroFactory.HeroNameColumnIndex> heroIdMap = new HeroFactory().initialiseHeroes(Path.of("src/main/resources/heroes.json")); //TODO: make a property

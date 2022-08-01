@@ -18,9 +18,10 @@ public class DataFixerTest {
     @Test
     @Disabled("todo")
     void shouldRemoveDuplicateMatchIds() throws IOException {
-        Files.copy(Path.of(DUPLICATE_EXPORT), Path.of(DUPLICATE_FILE_COPY));
+        Path duplicatePath = Path.of(DUPLICATE_FILE_COPY);
+        Files.copy(Path.of(DUPLICATE_EXPORT), duplicatePath);
         dataFixer.removeDuplicates(DUPLICATE_FILE_COPY);
-        final int size = Files.readAllLines(Path.of(DUPLICATE_FILE_COPY)).size();
+        final int size = Files.readAllLines(duplicatePath).size();
         assertEquals(6, size);
     }
 

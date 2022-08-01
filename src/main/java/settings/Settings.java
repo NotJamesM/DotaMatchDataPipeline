@@ -5,7 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
-public class Settings implements ValveSettings {
+public class Settings implements ValveSettings, SequenceNumberRepositorySettings {
 
     private final Properties properties;
 
@@ -42,5 +42,10 @@ public class Settings implements ValveSettings {
     @Override
     public String getMatchDetailsPath() {
         return properties.getProperty("get.match.details.path");
+    }
+
+    @Override
+    public Path getSequenceNumberFilePath() {
+        return Path.of("sequence.number.file.path");
     }
 }
