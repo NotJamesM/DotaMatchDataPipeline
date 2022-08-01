@@ -1,7 +1,7 @@
 package testbuilders;
 
-import domain.valve.MatchDetailsResult;
-import domain.valve.PlayerHistory;
+import com.github.notjamesm.domain.valve.MatchDetailsResult;
+import com.github.notjamesm.domain.valve.PlayerHistory;
 
 import java.util.List;
 

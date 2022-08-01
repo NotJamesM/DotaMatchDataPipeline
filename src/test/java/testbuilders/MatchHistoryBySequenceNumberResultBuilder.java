@@ -1,7 +1,7 @@
 package testbuilders;
 
-import domain.valve.MatchHistoryBySequenceNumberResult;
-import domain.valve.MatchId;
+import com.github.notjamesm.domain.valve.MatchHistoryBySequenceNumberResult;
+import com.github.notjamesm.domain.valve.MatchId;
 
 import java.util.ArrayList;
 import java.util.List;

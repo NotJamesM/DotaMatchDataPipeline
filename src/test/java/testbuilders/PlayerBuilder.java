@@ -1,6 +1,6 @@
 package testbuilders;
 
-import domain.valve.PlayerHistory;
+import com.github.notjamesm.domain.valve.PlayerHistory;
 
 public class PlayerBuilder {
 
