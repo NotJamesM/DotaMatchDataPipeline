@@ -1,5 +1,7 @@
 plugins {
+    id 'application'
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 group 'com.github.notjamesm'
@@ -7,6 +9,14 @@ version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+}
+
+application {
+    mainClass.set("com.github.notjamesm.main")
+}
+
+java {
+    targetCompatibility(JavaVersion.VERSION_18)
 }
 
 dependencies {
