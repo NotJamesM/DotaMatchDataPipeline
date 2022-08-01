@@ -3,6 +3,7 @@ package services;
 import domain.model.HeroModel;
 import domain.model.MatchModel;
 import org.slf4j.Logger;
+import settings.DataRenderSettings;
 import util.HeroFactory;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.System.lineSeparator;
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.CREATE;
 import static org.apache.commons.lang3.time.DurationFormatUtils.formatDuration;
@@ -19,12 +21,15 @@ import static org.apache.commons.lang3.time.DurationFormatUtils.formatDuration;
 public class DataRenderer {
 
     private static final List<Integer> VALID_GAMEMODES = List.of(22);
+    public static final String MATCH_ID_lOG_FILENAME = "MATCH_ID_LOG.txt";
     private final Map<Integer, HeroFactory.HeroNameColumnIndex> heroIdMap;
+    private final DataRenderSettings dataRenderSettings;
     private final Logger applicationLogger;
     private static long ignoreCount = 0;
 
-    public DataRenderer(Map<Integer, HeroFactory.HeroNameColumnIndex> heroIdMap, Logger applicationLogger) {
+    public DataRenderer(Map<Integer, HeroFactory.HeroNameColumnIndex> heroIdMap, DataRenderSettings dataRenderSettings, Logger applicationLogger) {
         this.heroIdMap = heroIdMap;
+        this.dataRenderSettings = dataRenderSettings;
         this.applicationLogger = applicationLogger;
     }
 
@@ -62,7 +67,7 @@ public class DataRenderer {
         final String tail = Long.toString(collect.get(collect.size() - 1));
         applicationLogger.info("List head {} | List tail {}", head, tail);
         final String row = "%s | head: %s - tail: %s".formatted(getTimeStamp(), head, tail);
-        writeToFile(row, "MATCH_ID_LOG.txt");
+        writeToFile(row, MATCH_ID_lOG_FILENAME);
     }
 
     private boolean filterMatches(MatchModel match) {
@@ -78,7 +83,10 @@ public class DataRenderer {
 
     private void writeToFile(String row, String filename) {
         try {
-            Files.writeString(Path.of("%s".formatted(filename)), row + System.lineSeparator(), APPEND, CREATE);
+            if (!Files.exists(dataRenderSettings.getExportDirectoryPath())) {
+                Files.createDirectory(dataRenderSettings.getExportDirectoryPath());
+            }
+            Files.writeString(Path.of("%s/%s".formatted(dataRenderSettings.getExportDirectoryPath(), filename)), row + lineSeparator(), APPEND, CREATE);
         } catch (IOException e) {
             applicationLogger.error("Error writing row to output: {}\n{}", filename, e);
             throw new RuntimeException(e);
