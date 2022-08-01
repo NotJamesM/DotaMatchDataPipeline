@@ -5,7 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
-public class Settings implements ValveSettings, SequenceNumberRepositorySettings, HeroFactorySettings {
+public class Settings implements ValveSettings, SequenceNumberRepositorySettings, HeroFactorySettings, DataRenderSettings {
 
     private final Properties properties;
 
@@ -52,5 +52,10 @@ public class Settings implements ValveSettings, SequenceNumberRepositorySettings
     @Override
     public Path getHeroesJsonFilePath() {
         return Path.of(properties.getProperty("heroes.json.file.path"));
+    }
+
+    @Override
+    public Path getExportDirectoryPath() {
+        return Path.of(properties.getProperty("export.directory.path"));
     }
 }

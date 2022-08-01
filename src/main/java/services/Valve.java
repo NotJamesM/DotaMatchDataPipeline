@@ -13,8 +13,6 @@ import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-import static java.lang.String.format;
-
 public class Valve {
 
     private final ValveSettings valveSettings;
@@ -70,25 +68,25 @@ public class Valve {
     private HttpRequest createGetMatchesRequest(int matchesToRequest) {
         return HttpRequest.newBuilder().GET()
                 .uri(buildValveApiUrl(valveSettings.getMatchHistoryPath(),
-                        format("game_mode=22&min_players=10&skill=3&matches_requested=%d", matchesToRequest)))
+                        "game_mode=22&min_players=10&skill=3&matches_requested=%d".formatted(matchesToRequest)))
                 .build();
     }
 
     private HttpRequest createGetMatchesBySequenceNumberRequest(long sequenceNumberToStartFrom, int matchesToRequest) {
         return HttpRequest.newBuilder().GET()
                 .uri(buildValveApiUrl(valveSettings.getMatchHistoryBySeqNumPath(),
-                        format("matches_requested=%d&start_at_match_seq_num=%d", matchesToRequest, sequenceNumberToStartFrom)))
+                        "matches_requested=%d&start_at_match_seq_num=%d".formatted(matchesToRequest, sequenceNumberToStartFrom)))
                 .build();
     }
 
     private HttpRequest createGetMatchDetailsRequest(long matchId) {
         return HttpRequest.newBuilder().GET()
-                .uri(buildValveApiUrl(valveSettings.getMatchDetailsPath(), format("match_id=%d", matchId)))
+                .uri(buildValveApiUrl(valveSettings.getMatchDetailsPath(), "match_id=%d".formatted(matchId)))
                 .build();
     }
 
     private URI buildValveApiUrl(String path, String queryParameters) {
-        return URI.create(format("%s%s?key=%s&%s",
+        return URI.create("%s%s?key=%s&%s".formatted(
                 valveSettings.baseValveApiUrl(),
                 path,
                 valveSettings.valveApiKey(),

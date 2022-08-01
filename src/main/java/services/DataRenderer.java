@@ -12,7 +12,6 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.String.format;
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.CREATE;
 import static org.apache.commons.lang3.time.DurationFormatUtils.formatDuration;
@@ -36,7 +35,7 @@ public class DataRenderer {
     public String exportDataToModelFormat(List<MatchModel> matchModels, String filenameToAppendTo) {
         String filename;
         if (filenameToAppendTo.isBlank()) {
-            filename = format("output-%s.csv", getTimeStamp());
+            filename = "output-%s.csv".formatted(getTimeStamp());
             writeToFile(generateHeader(), filename);
         } else {
             filename = filenameToAppendTo;
@@ -62,7 +61,7 @@ public class DataRenderer {
         final String head = Long.toString(collect.get(0));
         final String tail = Long.toString(collect.get(collect.size() - 1));
         applicationLogger.info("List head {} | List tail {}", head, tail);
-        final String row = String.format("%s | head: %s - tail: %s", getTimeStamp(), head, tail);
+        final String row = "%s | head: %s - tail: %s".formatted(getTimeStamp(), head, tail);
         writeToFile(row, "MATCH_ID_LOG.txt");
     }
 
@@ -79,9 +78,9 @@ public class DataRenderer {
 
     private void writeToFile(String row, String filename) {
         try {
-            Files.writeString(Path.of(filename), row + System.lineSeparator(), APPEND, CREATE);
+            Files.writeString(Path.of("%s".formatted(filename)), row + System.lineSeparator(), APPEND, CREATE);
         } catch (IOException e) {
-            applicationLogger.error(format("Error writing row to output: %s", filename), e);
+            applicationLogger.error("Error writing row to output: {}\n{}", filename, e);
             throw new RuntimeException(e);
         }
     }
@@ -89,7 +88,7 @@ public class DataRenderer {
     private String mapToRow(MatchModel match) {
         applicationLogger.info("Exporting data for match id: {}", match.matchId());
         StringBuilder sb = new StringBuilder();
-        sb.append(format("%s,%s,%s", 1, match.matchId(), match.radiantWin()));
+        sb.append("%s,%s,%s".formatted(1, match.matchId(), match.radiantWin()));
         for (Map.Entry<Integer, HeroFactory.HeroNameColumnIndex> heroIndexEntry : heroIdMap.entrySet()) {
             List<HeroModel> heroes = match.heroes();
             for (int i = 0; i < heroes.size(); i++) {

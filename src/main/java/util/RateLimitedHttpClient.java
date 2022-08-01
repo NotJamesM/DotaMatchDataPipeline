@@ -9,8 +9,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-import static java.lang.String.format;
-
 @SuppressWarnings("UnstableApiUsage")
 public class RateLimitedHttpClient {
 
@@ -30,7 +28,7 @@ public class RateLimitedHttpClient {
         final HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         applicationLogger.info("Response from Valve:\n{}", httpResponse);
         if (httpResponse.statusCode() != 200) {
-            throw new ValveException(format("Response from steam API failed: %s\n%s", httpResponse.statusCode(), httpResponse.body()));
+            throw new ValveException("Response from steam API failed: %s\n%s".formatted(httpResponse.statusCode(), httpResponse.body()));
         }
         return httpResponse;
     }

@@ -26,7 +26,7 @@ public class DataPipelineBuilder {
 
         final DataFixer dataFixer = new DataFixer(applicationLogger);
         Map<Integer, HeroFactory.HeroNameColumnIndex> heroIdMap = new HeroFactory().initialiseHeroes(settings.getHeroesJsonFilePath());
-        final DataRenderer dataRenderer = new DataRendererFactory(applicationLogger, heroIdMap).dataRenderer();
+        final DataRenderer dataRenderer = new DataRendererFactory(applicationLogger, settings, heroIdMap).dataRenderer();
         return new DataPipeline(scraper, dataFixer, dataRenderer, applicationLogger);
     }
 }
