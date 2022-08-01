@@ -46,6 +46,6 @@ public class Settings implements ValveSettings, SequenceNumberRepositorySettings
 
     @Override
     public Path getSequenceNumberFilePath() {
-        return Path.of("sequence.number.file.path");
+        return Path.of(properties.getProperty("sequence.number.file.path"));
     }
 }
