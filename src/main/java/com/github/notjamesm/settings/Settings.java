@@ -1,5 +1,7 @@
 package com.github.notjamesm.settings;
 
+import org.slf4j.Logger;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,10 +10,18 @@ import java.util.Properties;
 public class Settings implements ValveSettings, SequenceNumberRepositorySettings, HeroFactorySettings, DataRenderSettings {
 
     private final Properties properties;
+    private final Logger applicationLogger;
 
-    public Settings(String path) throws IOException {
+    public Settings(String path, Logger applicationLogger) {
+        this.applicationLogger = applicationLogger;
+        applicationLogger.info("Attempting to load properties from {}", path);
         properties = new Properties();
-        properties.load(Files.newBufferedReader(Path.of(path)));
+        try {
+            properties.load(Files.newBufferedReader(Path.of(path)));
+        } catch (IOException e) {
+            applicationLogger.error("Failed to load properties from {}", path);
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

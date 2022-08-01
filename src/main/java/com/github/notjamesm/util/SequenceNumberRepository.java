@@ -8,6 +8,7 @@ import java.io.IOException;
 import static java.lang.Long.parseLong;
 import static java.nio.file.Files.readString;
 import static java.nio.file.Files.writeString;
+import static org.apache.commons.lang3.StringUtils.strip;
 
 public class SequenceNumberRepository {
 
@@ -21,11 +22,11 @@ public class SequenceNumberRepository {
 
     public long getCurrentSequenceNumber() {
         try {
-            final long sequenceNumber = parseLong(readString(sequenceNumberRepositorySettings.getSequenceNumberFilePath()));
+            final long sequenceNumber = parseLong(strip(readString(sequenceNumberRepositorySettings.getSequenceNumberFilePath())));
             applicationLogger.info("Getting current sequence number of: {}", sequenceNumber);
             return sequenceNumber;
         } catch (IOException e) {
-            applicationLogger.error("Failed to get sequence number due to:\n", e);
+            applicationLogger.error("Failed to get sequence number due to:\n{}", e.getMessage());
             throw new RuntimeException(e);
         }
     }

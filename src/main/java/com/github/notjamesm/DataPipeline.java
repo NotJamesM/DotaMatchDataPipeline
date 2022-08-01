@@ -30,7 +30,7 @@ public class DataPipeline {
             final List<MatchModel> matchModels = scraper.scrapeRecentMatches(100);
             dataRenderer.exportDataToModelFormat(matchModels);
         } catch (Exception e) {
-            logger.error("Uncaught Exception: \n", e);
+            logger.error("Uncaught Exception:\n", e);
         }
     }
 
@@ -39,7 +39,7 @@ public class DataPipeline {
             final List<MatchModel> matchModels = scraper.scrapeMatchesBySequenceNumber(10);
             dataRenderer.exportDataToModelFormat(matchModels);
         } catch (Exception e) {
-            logger.error("Uncaught Exception:\n{}", e.toString());
+            logger.error("Uncaught Exception:\n", e);
         }
     }
 }

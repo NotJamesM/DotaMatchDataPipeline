@@ -11,7 +11,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         final Logger applicationLogger = LoggerFactory.getLogger("APPLICATION");
         final DataPipeline dataPipeline = new DataPipelineBuilder(
-                new Settings(System.getProperty("properties.path")),
+                new Settings(System.getProperty("properties.path"), applicationLogger),
                 applicationLogger)
                 .build();
 
