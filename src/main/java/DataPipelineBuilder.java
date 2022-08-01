@@ -6,7 +6,6 @@ import util.*;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
-import java.nio.file.Path;
 import java.util.Map;
 
 public class DataPipelineBuilder {
@@ -26,7 +25,7 @@ public class DataPipelineBuilder {
         final Scraper scraper = new ScraperFactory(valve, new SequenceNumberRepository(settings, applicationLogger), applicationLogger).scraper();
 
         final DataFixer dataFixer = new DataFixer(applicationLogger);
-        Map<Integer, HeroFactory.HeroNameColumnIndex> heroIdMap = new HeroFactory().initialiseHeroes(Path.of("src/main/resources/heroes.json")); //TODO: make a property
+        Map<Integer, HeroFactory.HeroNameColumnIndex> heroIdMap = new HeroFactory().initialiseHeroes(settings.getHeroesJsonFilePath());
         final DataRenderer dataRenderer = new DataRendererFactory(applicationLogger, heroIdMap).dataRenderer();
         return new DataPipeline(scraper, dataFixer, dataRenderer, applicationLogger);
     }
