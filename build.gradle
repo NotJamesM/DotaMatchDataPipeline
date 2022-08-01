@@ -12,7 +12,7 @@ repositories {
 }
 
 application {
-    mainClass.set("com.github.notjamesm.main")
+    mainClass.set("com.github.notjamesm.Main")
 }
 
 java {
